@@ -1,0 +1,38 @@
+# ==========================
+# AIpt — .gitignore
+# ==========================
+
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env.prod.bak
+
+# --- Backend: local deps + secrets ---
+backend/.site-packages/
+backend/.env
+backend/.env.prod
+backend/data/uploads/
+backend/tmp/
+*.log
+
+# --- Frontend: build output + node ---
+frontend/node_modules/
+frontend/dist/
+frontend/*.log
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+*.swp
+
+# --- IDE ---
+.idea/
+.vscode/
+*.code-workspace
+
+# --- Root misc (my test files) ---
+"# Flask vs FastAPI.md"
+_test_*.py

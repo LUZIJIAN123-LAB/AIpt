@@ -1,0 +1,49 @@
+# =====================================================================
+# AIpt — systemd unit (uvicorn under venv)
+# Deploy at /etc/systemd/system/aipt.service:
+#   systemctl daemon-reload
+#   systemctl enable --now aipt
+# =====================================================================
+
+[Unit]
+Description=AIpt RAG Platform (uvicorn)
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=aipt
+Group=aipt
+WorkingDirectory=/home/aipt/backend
+
+# 127.0.0.1 only — Nginx terminates TLS on 443 and proxies here.
+Environment=APP_ENV=prod
+Environment=APP_HOST=127.0.0.1
+Environment=APP_PORT=8000
+EnvironmentFile=/home/aipt/backend/.env.prod
+
+ExecStart=/home/aipt/backend/.venv/bin/python -m uvicorn app.main:app \
+    --host 127.0.0.1 --port 8000 \
+    --workers 2 \
+    --loop uvloop
+
+Restart=on-failure
+RestartSec=3
+
+# Logs → journalctl -u aipt -f
+StandardOutput=journal
+StandardError=journal
+
+# Resource limits (2C/2G box — generous headroom).
+MemoryMax=1200M
+CPUQuota=160%
+
+# Harden.
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target
